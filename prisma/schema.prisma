@@ -22,3 +22,16 @@ model User {
   lastname String?
   otp_code Int?
 }
+
+model Product {
+  id           Int    @id @default(autoincrement())
+  handle       String
+  title        String
+  description  String
+  sku          String
+  grams        Float
+  stock        Int
+  price        Float
+  comparePrice Float
+  barcode      String
+}
