@@ -35,11 +35,11 @@ export class FilesController {
         try {
           // console.log(results);
           this.fileService.importCsvProducts(results);
+          return { message: 'File uploaded and processed' };
         } catch (error) {
           throw new BadRequestException('User does not exist');
         }
       });
-    return { message: 'File uploaded and processed' };
   }
 
   private convertKeysToCamelCase(data: any): any {
@@ -64,11 +64,4 @@ export class FilesController {
         group.toUpperCase().replace(/[- _]/g, ''),
       );
   }
-  // private toCamelCase(key: string): string {
-  //   return key
-  //     .toLowerCase()
-  //     .replace(/([-_][a-z])/gi, ($1) =>
-  //       $1.toUpperCase().replace('-', '').replace('_', ''),
-  //     );
-  // }
 }

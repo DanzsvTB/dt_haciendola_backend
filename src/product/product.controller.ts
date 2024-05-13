@@ -7,9 +7,11 @@ import {
   Body,
   Param,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { Product } from '@prisma/client';
+import { AuthGuard } from 'src/auth/guard/auth.guard';
 @Controller('products')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
@@ -25,6 +27,7 @@ export class ProductController {
   }
 
   @Get(':id')
+  @UseGuards(AuthGuard)
   async getUserById(@Param('id') id: string) {
     const userFound = await this.productService.getProductByID(Number(id));
     if (!userFound) {
