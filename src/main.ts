@@ -14,6 +14,7 @@ async function bootstrap() {
     preflightContinue: false,
     optionsSuccessStatus: 200,
     exposedHeaders: 'X-Total-Count',
+    credentials: true, // Habilitar el intercambio de recursos con credenciales
   });
   app.useGlobalPipes(
     new ValidationPipe({
