@@ -8,27 +8,55 @@ import {
   Param,
   NotFoundException,
   UseGuards,
+  Query,
+  Response,
+  Patch,
 } from '@nestjs/common';
+import { Response as Res } from 'express';
 import { ProductService } from './product.service';
-import { Product } from '@prisma/client';
+import { Product, Prisma } from '@prisma/client';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
+import { CreateProductDto } from './dto/create.dto';
 @Controller('products')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Get()
-  async getAllUser() {
-    return await this.productService.getAllProducts();
+  @UseGuards(AuthGuard)
+  async getAllProducts(
+    @Query('_start') start: string,
+    @Query('_end') end: string,
+    @Response() res: Res,
+  ) {
+    const startIdx = start ? parseInt(start, 10) : 0;
+    const endIdx = end ? parseInt(end, 10) : 10; // Valor por
+    const products = await this.productService.getAllProducts(startIdx, endIdx);
+    const totalCount = await this.productService.getTotalProductsCount();
+    res.set('X-Total-Count', totalCount.toString());
+    return res.send(products);
   }
 
   @Post()
-  async createTask(@Body() data: Product) {
-    return await this.productService.createProduct(data);
+  @UseGuards(AuthGuard)
+  async createProduct(@Body() data: Product) {
+    // console.log(data);
+    const newData: Prisma.ProductCreateInput = {
+      title: data.title,
+      handle: data.handle,
+      description: data.description,
+      sku: data.sku,
+      grams: Number(data.grams),
+      stock: Number(data.stock),
+      price: Number(data.price),
+      comparePrice: Number(data.comparePrice),
+      barcode: data.barcode,
+    };
+    return await this.productService.createProduct(newData);
   }
 
   @Get(':id')
   @UseGuards(AuthGuard)
-  async getUserById(@Param('id') id: string) {
+  async getProductById(@Param('id') id: string) {
     const userFound = await this.productService.getProductByID(Number(id));
     if (!userFound) {
       throw new NotFoundException('Product not found');
@@ -37,7 +65,8 @@ export class ProductController {
   }
 
   @Delete(':id')
-  async deleteUserById(@Param('id') id: string) {
+  @UseGuards(AuthGuard)
+  async deleteProductById(@Param('id') id: string) {
     try {
       return await this.productService.deleteProduct(Number(id));
     } catch (error) {
@@ -45,8 +74,25 @@ export class ProductController {
     }
   }
 
-  @Put(':id')
-  async updateUserById(@Param('id') id: string, @Body() data: Product) {
-    return await this.productService.updateProduct(Number(id), data);
+  @Patch(':id')
+  @UseGuards(AuthGuard)
+  async updateProductById(@Param('id') id: string, @Body() data: Product) {
+    const newData: Prisma.ProductUpdateInput = {
+      title: data.title,
+      handle: data.handle,
+      description: data.description,
+      sku: data.sku,
+      grams: Number(data.grams),
+      stock: Number(data.stock),
+      price: Number(data.price),
+      comparePrice: Number(data.comparePrice),
+      barcode: data.barcode,
+    };
+    return await this.productService.updateProduct({
+      where: {
+        id: Number(id),
+      },
+      data: newData,
+    });
   }
 }

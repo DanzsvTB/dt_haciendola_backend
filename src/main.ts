@@ -7,6 +7,14 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api/v1');
 
+  app.enableCors({
+    origin: '*', // Permitir cualquier origen
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
+    preflightContinue: false,
+    optionsSuccessStatus: 200,
+    exposedHeaders: 'X-Total-Count',
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

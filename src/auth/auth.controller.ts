@@ -1,16 +1,8 @@
-import {
-  Body,
-  Controller,
-  Post,
-  UseGuards,
-  Get,
-  Request,
-} from '@nestjs/common';
+import { Body, Controller, Post, Put } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { User } from '@prisma/client';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { AuthGuard } from './guard/auth.guard';
+import { UpDatePasswordDto } from './dto/updatepass.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -20,7 +12,6 @@ export class AuthController {
     @Body()
     registerDto: RegisterDto,
   ) {
-    // console.log(registerDto);
     return await this.authService.register(registerDto);
   }
   @Post('login')
@@ -29,5 +20,13 @@ export class AuthController {
     loginDto: LoginDto,
   ) {
     return await this.authService.login(loginDto);
+  }
+
+  @Put('update')
+  async updatePassword(
+    @Body()
+    updatePasswordDto: UpDatePasswordDto,
+  ) {
+    return await this.authService.updatePassword(updatePasswordDto);
   }
 }
